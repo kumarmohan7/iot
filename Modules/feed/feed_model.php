@@ -411,6 +411,41 @@ class Feed
         return $feedids;
     }
 
+//------------------------------------------------------->SMK Add 13-Oct-17    
+	public function get_user_feed_ids_tags($userid)
+    {
+        $result = $this->mysqli->query("SELECT id,tag FROM feeds WHERE `userid` = '$userid'");
+        $feedids = array();
+        $tags = array();
+        while ($row = $result->fetch_array()) 
+        {
+          $feedids[] = $row['id'];
+          $tags[] = $row['tag'];
+        }
+  		  return array($feedids,$tags);
+    }
+    
+ 	public function get_user_feed_ids_from_tag($userid,$tag)    //TODO Testing 13-Oct-17
+    {
+        $result = $this->mysqli->query("SELECT id,tag FROM feeds WHERE `userid` = '$userid'");
+        $feedids = array();
+        $tags = array();
+        $feedids_output = array();
+        while ($row = $result->fetch_array()) 
+        {
+          $feedids[] = $row['id'];
+          $tags[] = $row['tag'];
+        }
+        for($i = 0; $i < count($feedids); $i++)
+        {
+      		if($tags[$i] == $tag)
+      		{
+             $feedids_output[] = $feedids[$i];
+      		}
+        }
+  		  return array($feedids_output);
+    }
+//------------------------------------------------------->SMK Add 13-Oct-17    
 
     /*
     Get operations by feed id
