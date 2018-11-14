@@ -36,6 +36,7 @@
 -->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.stack.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/graph/vis.helper.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/misc/clipboard.js"></script>
 <link href="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.min.js"></script>
 <link href="<?php echo $path; ?>Modules/graph/graph.css" rel="stylesheet">
@@ -204,8 +205,12 @@
                     <option value="showName">Show name</option>
                     <option value="hide">Hide</option>
                 </select>
-            </div> 
-            
+            </div>
+
+            <div class="input-append"><!-- just to match the styling of the other items -->
+                <button onclick="copyToClipboardCustomMsg(document.getElementById('csv'), 'copy-csv-feedback','Copied')" class="csvoptions btn hidden" id="copy-csv" type="button">Copy <i class="icon-share-alt"></i></button>
+            </div>
+            <span id="copy-csv-feedback" class="csvoptions"></span>
             
             <textarea id="csv" style="width:98%; height:500px; display:none; margin-top:10px"></textarea>
         </div>
@@ -213,6 +218,7 @@
 </div>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/graph/graph.js?v=1"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/moment.min.js"></script>
 
 <script>
     var path = "<?php echo $path; ?>";
@@ -235,8 +241,15 @@
         });
     }
 
+    // stops a part upgrade error - this change requires emoncms/emoncms repo to also be updated 
+    // keep button hidden if new version of clipboard.js is not available
+    if (typeof copyToClipboardCustomMsg === 'function') {
+        document.getElementById('copy-csv').classList.remove('hidden');
+    } else {
+        copyToClipboardCustomMsg = function () {}
+    }
+
     // Assign active feedid from URL
-    console.log(window.location.pathname);
     var urlparts = window.location.pathname.split("graph/");
     if (urlparts.length==2) {
         var feedids = urlparts[1].split(",");

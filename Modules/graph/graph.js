@@ -55,13 +55,22 @@ $('#placeholder').bind("plotselected", function (event, ranges)
     
     graph_reloaddraw();
 });
-
+function getFeedUnit(id){
+    let unit = ''
+    for(let key in feeds) {
+        if (feeds[key].id == id){
+            unit = feeds[key].unit || ''
+        }
+    }
+    return unit
+}
 $('#placeholder').bind("plothover", function (event, pos, item) {
     var item_value;
     if (item) {
         var z = item.dataIndex;
         if (previousPoint != item.datapoint) {
             var dp=feedlist[item.seriesIndex].dp;
+            var feedid = feedlist[item.seriesIndex].id;
             previousPoint = item.datapoint;
 
             $("#tooltip").remove();
@@ -71,14 +80,12 @@ $('#placeholder').bind("plothover", function (event, pos, item) {
             } else {
                 item_value=(item.datapoint[1]-item.datapoint[2]).toFixed(dp);
             }
-
-            var d = new Date(item_time);
-            var days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-            var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-            var minutes = d.getMinutes();
-            if (minutes<10) minutes = "0"+minutes;
-            var date = d.getHours()+":"+minutes+" "+days[d.getDay()]+", "+months[d.getMonth()]+" "+d.getDate();
-            tooltip(item.pageX, item.pageY, "<span style='font-size:11px'>"+item.series.label+"</span><br>"+item_value+"<br><span style='font-size:11px'>"+date+"</span>", "#fff");
+            item_value+=' '+getFeedUnit(feedid);
+            var date = moment(item_time).format('llll')
+            tooltip(item.pageX, item.pageY, "<span style='font-size:11px'>"+item.series.label+"</span>"+
+            "<br>"+item_value + 
+            "<br><span style='font-size:11px'>"+date+"</span>"+
+            "<br><span style='font-size:11px'>("+(item_time/1000)+")</span>", "#fff");
         }
     } else $("#tooltip").remove();
 });
@@ -508,7 +515,7 @@ function graph_init_editor()
     
     $('body').on("click",".legendColorBox",function(d){
           var country = $(this).html().toLowerCase();
-          console.log(country);
+        //   console.log(country);
     }); 
 
     $(".feed-options-show-stats").click(function(){
@@ -674,6 +681,7 @@ function graph_draw()
         var label = "";
         if (showtag) label += feedlist[z].tag+": ";
         label += feedlist[z].name;
+        label += ' '+getFeedUnit(feedlist[z].id);
         var stacked = (typeof(feedlist[z].stack) !== "undefined" && feedlist[z].stack);
         var plot = {label:label, data:data, yaxis:feedlist[z].yaxis, color: feedlist[z].color, stack: stacked};
         
@@ -707,7 +715,7 @@ function graph_draw()
             }
             out += "</td>";
 
-            out += "<td>"+feedlist[z].id+":"+feedlist[z].tag+":"+feedlist[z].name+"</td>";
+            out += "<td>"+feedlist[z].id+":"+feedlist[z].tag+":"+feedlist[z].name + getFeedUnit(feedlist[z].id)+"</td>";
             out += "<td><select class='plottype' feedid="+feedlist[z].id+" style='width:80px'>";
 
             var selected = "";

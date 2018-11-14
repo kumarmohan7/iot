@@ -9,8 +9,7 @@ function graph_controller()
 
     // Check if group module is installed
     $group = false;
-    $result = $mysqli->query("SHOW TABLES LIKE 'groups'");
-    if ($result->num_rows > 0) {
+    if (file_exists("Modules/group/group_model.php")) {
         require_once "Modules/group/group_model.php";
         $group = new Group($mysqli, $redis, null, null, null);
     }
