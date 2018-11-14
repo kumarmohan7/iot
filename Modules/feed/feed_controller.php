@@ -57,24 +57,7 @@ function feed_controller()
             }
             else if (isset($_GET['userid'])) $result = $feed->get_user_public_feeds(get('userid'));
 
-        } 
-        
-//------------------------------------------------------->SMK Add 13-Oct-17      
-        elseif ($route->action == "ids" && $session['read']) 
-        {
-            $result = $feed->get_user_feed_ids($session['userid']);
-//            $result = $feed->get_user_feed_ids_tags($session['userid']); //TODO SMK Testing 13-Oct-17
-        } 
-        elseif ($route->action == "tags") 
-        {
-            $tag_name = get('tag');
-//            $result = $tag_name;
-            
-            $result = $feed->get_user_feed_ids_from_tag($session['userid'],$tag_name); //TODO SMK Testing 13-Oct-17
-        } 
-//------------------------------------------------------->SMK Add 13-Oct-17     
-  
-        elseif ($route->action == "listwithmeta" && $session['read']) {
+        } elseif ($route->action == "listwithmeta" && $session['read']) {
             $result = $feed->get_user_feeds_with_meta($session['userid']);
         } elseif ($route->action == "getid" && $session['read']) { 
             $route->format = "text";
@@ -106,7 +89,6 @@ function feed_controller()
             $feedid = (int) get('id');
             // Actions that operate on a single existing feed that all use the feedid to select:
             // First we load the meta data for the feed that we want
-
             if ($feed->exist($feedid)) // if the feed exists
             {
                 $f = $feed->get($feedid);

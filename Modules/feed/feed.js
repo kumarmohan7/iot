@@ -165,30 +165,24 @@ var feed = {
     }
     return processlist;
   },
-  
-//------------------------------------------------------->SMK Add 13-Oct-17 
-  'ids':function(){
-    var result = {};
-    var apikeystr = ""; if (feed.apikey!="") apikeystr = "?apikey="+feed.apikey;
-      
-      $.ajax({ url: path+"feed/ids.json"+apikeystr, dataType: 'json', async: false, success: function(data) {result = data;} });
-    
-    return feeds;
-  },
-  
-  'tags':function(){
-    var result = {};
-    var apikeystr = ""; if (feed.apikey!="") apikeystr = "?apikey="+feed.apikey;
-      
-      $.ajax({ url: path+"feed/tags.json"+apikeystr, data: "tag="+tag, dataType: 'json', async: false, success: function(data) {result = data;} });
-    
-    return feeds;
-  },
-//------------------------------------------------------->SMK Add 13-Oct-17 
 
   'reset_processlist':function(feedid,processid){
     var result = {};
     $.ajax({ url: path+"feed/process/reset.json", data: "id="+feedid, async: false, success: function(data){result = data;} });
+    return result;
+  },
+  
+  'meta':function(feedid)
+  {
+    var result = {};
+    var apikeystr = ""; if (feed.apikey!="") apikeystr = "&apikey="+feed.apikey;
+    $.ajax({                                      
+      url: path+'feed/getmeta.json',                         
+      data: apikeystr+"&id="+feedid,
+      dataType: 'json',
+      async: false,                      
+      success: function(data_in) { result = data_in; } 
+    });
     return result;
   }
 }
