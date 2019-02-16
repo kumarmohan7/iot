@@ -22,7 +22,6 @@ function switch_widgetlist()
       "optionshint":[_Tr("Feed to set, control with caution, make sure device being controlled can operate safely in event of emoncms failure."),_Tr("Starting value")]
     }
   };
-
   switch_events();
 
   return widgets;
@@ -38,34 +37,15 @@ function switch_events()
     if (invalue == 0) outval = 1;
     if (invalue == 1) outval = 0;
 
-    //feed.set(feedid,{'time':parseInt((new Date()).getTime()/1000),'value':outval});
-    //input.set(feedid,{'value':outval});
-    //$(this).feed.set(feedid,{'time':parseInt((new Date()).getTime()/1000),'value':outval});
-    //input.set(feedid,{'value':outval});
-    //$(this).feed.set(feedid,{'value':outval});
-    
-    
     var jqxhr; //jQuery XMLHttpRequest
-    //outval = 1;
 
-/*
     jqxhr = $.ajax({
         	  type: "GET",
-        	  url: "https://smartiot.co.in/iot/input/post?apikey=3d016f8c936534ea442894aaf91365c6&node=My_Room",
-        	  data: "&json={SW2:"+outval+"}",
-        	  timeout:1000
-        	});
-*/    
-    jqxhr = $.ajax({
-        	  type: "GET",
-        	  url: "https://iot.smartiot.co.in/feed/update.json?id="+feedid+"&time=UNIXTIME&value="+outval,
+        	  url: "http://test.smartiot.co.in/feed/update.json?id="+feedid+"&time=UNIXTIME&value="+outval,
         	  timeout:1000
         	});
     
     console.log(jqxhr);
-    
-    
-    
     $(this).attr("value",outval);
     var id = "can-"+$(this).attr("id");
     draw_switch(widgetcanvas[id], outval);
@@ -100,7 +80,6 @@ function switch_fastupdate()
 {
     switch_draw();
 }
-
 
 function draw_switch(circle,status)
 {
