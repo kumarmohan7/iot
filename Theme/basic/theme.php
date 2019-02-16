@@ -74,6 +74,7 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart IoT - <?php echo $route->controller.' '.$route->action.' '.$route->subaction; ?></title>
+    <link rel="manifest" href="/manifest.json">
     <link rel="shortcut icon" href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/<?php echo $favicon; ?>" />
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -83,7 +84,7 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
     <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
     <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-<?php echo $themecolor; ?>.css?v=<?php echo $v; ?>" rel="stylesheet">
-
+    
 <?php if ($menucollapses) { ?>
     <style>
         /* this is menu colapsed */
@@ -193,6 +194,13 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
             <?php echo _('Powered by '); ?>
             <a href="http://smartiot.co.in">Smart IoT</a>
         </div>
+        <script>
+            if('serviceWorker' in navigator) {
+              navigator.serviceWorker
+                       .register('/service_worker.js')
+                       .then(function() { console.log("Service Worker Registered"); });
+            }
+        </script>
         <script type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>
         <?php if (isset($ui_version_2) && $ui_version_2) { ?>
         <script type="text/javascript" src="<?php echo $path; ?>Lib/hammer.min.js"></script>

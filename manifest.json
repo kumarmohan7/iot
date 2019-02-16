@@ -1,0 +1,24 @@
+{
+    "short_name": "Smart IoT",
+    "name": "Smart IoT",
+    "icons": [
+        {
+            "src": "/images/SmartIoT_Logo_192x192.png",
+            "type": "image/png",
+            "sizes": "192x192"
+        },
+        {
+            "src": "/images/SmartIoT_Logo_512x512.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ],
+    "start_url": "https://iot.smartiot.co.in/",
+    "background_color": "#ffffff",
+    "display": "standalone",
+    "scope": "/",
+    "theme_color": "#ffffff",
+    "lang": "",
+    "orientation": "natural",
+    "description": "Smart IoT"
+}
