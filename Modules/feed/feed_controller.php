@@ -66,7 +66,7 @@ function feed_controller()
         elseif ($route->action == "tags") 
         {
             $tag_name = get('tag');
-//            return $tag_name;
+            return $tag_name;
             
             return $feed->get_user_feed_ids_from_tag($session['userid'],$tag_name); //TODO SMK Testing 13-Oct-17
         } 
