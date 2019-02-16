@@ -76,7 +76,7 @@ function feed_controller()
         } 
         
 //------------------------------------------------------->SMK Add 13-Oct-17     
-        } elseif ($route->action == "listwithmeta" && $session['read']) {
+        elseif ($route->action == "listwithmeta" && $session['read']) {
             return $feed->get_user_feeds_with_meta($session['userid']);
         } elseif ($route->action == "getid" && $session['read']) { 
             $route->format = "text";
