@@ -60,20 +60,20 @@ function feed_controller()
 //------------------------------------------------------->SMK Add 13-Oct-17      
         elseif ($route->action == "ids" && $session['read']) 
         {
-            return $feed->get_user_feed_ids($session['userid']);
-//            return $feed->get_user_feed_ids_tags($session['userid']); //TODO SMK Testing 13-Oct-17
+            $result = $feed->get_user_feed_ids($session['userid']);
+//            $result = $feed->get_user_feed_ids_tags($session['userid']); //TODO SMK Testing 13-Oct-17
         } 
         elseif ($route->action == "tags") 
         {
             $tag_name = get('tag');
-            return $tag_name;
+//            $result = $tag_name;
             
-            return $feed->get_user_feed_ids_from_tag($session['userid'],$tag_name); //TODO SMK Testing 13-Oct-17
+            $result = $feed->get_user_feed_ids_from_tag($session['userid'],$tag_name); //TODO SMK Testing 13-Oct-17
         } 
         elseif ($route->action == "info" && $session['read'])  
         {
             $tag_name = get('tag');
-            return $feed->GetUserFeedInfo($session['userid'],$tag_name);    //TODO SMK Testing 06-Dec-18
+            $result = $feed->GetUserFeedInfo($session['userid'],$tag_name);    //TODO SMK Testing 06-Dec-18
         } 
         
 //------------------------------------------------------->SMK Add 13-Oct-17     
