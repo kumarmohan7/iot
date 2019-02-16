@@ -42,10 +42,6 @@ $('.graph_time').click(function () {
     graph_reloaddraw();
 });
 
-$('#placeholder').bind("legendclick", function (event, ranges) {
-  console.log(event);
-});
-
 $('#placeholder').bind("plotselected", function (event, ranges)
 {
     floatingtime=0; 
@@ -226,8 +222,6 @@ function arrayMove(array,old_index, new_index){
 
 function graph_init_editor()
 {
-
-    if (session) graph_load_savedgraphs();
     if (!session && !userid) feeds = feedlist;
             
     var numberoftags = 0;
@@ -518,18 +512,21 @@ function graph_init_editor()
         //   console.log(country);
     }); 
 
-    $(".feed-options-show-stats").click(function(){
+    $(".feed-options-show-stats").click(function(event){
         $("#feed-options-table").hide();
         $("#feed-stats-table").show();
-        $(".feed-options-show-options").show();
-        $(".feed-options-show-stats").hide();
-    });    
+        $(".feed-options-show-options").removeClass('hide');
+        $(".feed-options-show-stats").addClass('hide');
+        event.preventDefault();
+    });
+
     
-    $(".feed-options-show-options").click(function(){
+    $(".feed-options-show-options").click(function(event){
         $("#feed-options-table").show();
         $("#feed-stats-table").hide();
-        $(".feed-options-show-options").hide();
-        $(".feed-options-show-stats").show();
+        $(".feed-options-show-options").addClass('hide');
+        $(".feed-options-show-stats").removeClass('hide');
+        event.preventDefault();
     });
 }
 
@@ -548,7 +545,6 @@ function pushfeedlist(feedid, yaxis) {
 
 function graph_reloaddraw() {
     graph_reload();
-    graph_draw();
 }
 
 function graph_reload()
@@ -565,36 +561,105 @@ function graph_reload()
     $("#request-interval").val(view.interval);
     $("#request-limitinterval").attr("checked",view.limitinterval);
     
-    var errorstr = "";    
+    var ids = [];
+    var average_ids = [];
+
+    // create array of selected feed ids
+    for (var z in feedlist) {
+        if (feedlist[z].getaverage) {
+            average_ids.push(feedlist[z].id);
+        } else {
+            ids.push(feedlist[z].id);
+        }
+    }
+    var data = {
+        ids: ids.join(','),
+        start: view.start,
+        end: view.end,
+        interval: view.interval,
+        skipmissing: skipmissing,
+        limitinterval: view.limitinterval,
+        apikey: apikey
+    }
+    if (requesttype!="interval") {
+        data.mode = requesttype;
+    }
+   
+    if (ids.length + average_ids.length === 0) {
+        var title = _lang['Select a feed'];
+        var message = _lang['Please select a feed from the Feeds List'];
+        $('#error')
+        .show()
+        .html('<div class="alert alert-info"><strong>' + title + '</strong> ' + message + '</div>');
+        return false;
+    }
+    if (ids.length > 0) {
+        // get feedlist data
+        $.getJSON(path+"feed/data.json", data, addFeedlistData)
+        .error(handleFeedlistDataError)
+        .always(checkFeedlistData);
+    }
+    if (average_ids.length > 0) {
+        // get feedlist average data
+        var average_ajax_data = $.extend({}, data, {ids: average_ids.join(',')});
+        $.getJSON(path+"feed/average.json", average_ajax_data, addFeedlistData)
+        .error(handleFeedlistDataError)
+        .always(checkFeedlistData);
+    }
+}  
     
+
+function addFeedlistData(response){
+    // loop through feedlist and add response data to data property
+    var valid = false;
+    for (i in feedlist) {
+        let feed = feedlist[i];
+        for (j in response) {
+            let item = response[j];
+            if (parseInt(feed.id) === parseInt(item.feedid)) {
+                feed.data = item.data;
+            }
+            if (typeof item.data.success === 'undefined') {
+                valid = true;
+            }
+        }
+    }
+    // alter feedlist base on user selection
+    if (valid) set_feedlist();
+}
+function handleFeedlistDataError(jqXHR, error, message){
+    // @todo: notify the user that the the data api was unreachable;
+}
+function checkFeedlistData(response){
+    // display message to user if response not valid
+    var message = '';
+    var messages = [];
+
+    for (i in response) {
+        var item = response[i];
+        if (typeof item.data !== 'undefined') {
+            if (typeof item.data.success !== 'undefined' && !item.data.success) {
+                messages.push(item.data.message);
+            }
+        } else {
+            // response is jqXHR object
+            messages.push(response.responseText);
+        }
+    }
+    message = messages.join(', ');
+    var errorstr = '';
+    if (messages.length > 0) {
+        errorstr = '<div class="alert alert-danger"><strong>Request error</strong> ' + message + '</div>';
+        $('#error').html(errorstr).show();
+    } else {
+        $('#error').hide();
+    }
+}
+
+function set_feedlist() {
     for (var z in feedlist)
     {
-        var mode = "&interval="+view.interval+"&skipmissing="+skipmissing+"&limitinterval="+view.limitinterval;
-        if (requesttype!="interval") mode = "&mode="+requesttype;
-        
-        var method = "data";
-        if (feedlist[z].getaverage) method = "average";
-        var request = path+"feed/"+method+".json?id="+feedlist[z].id+"&start="+view.start+"&end="+view.end + mode;
-
-        $.ajax({                                      
-            url: request,
-            async: false,
-            dataType: "text",
-            success: function(data_in) {
-            
-                // 1) Check validity of json data, or show error
-                var valid = true;
-                try {
-                    feedlist[z].data = JSON.parse(data_in);
-                    if (feedlist[z].data.success!=undefined) valid = false;
-                } catch (e) {
-                    valid = false;
-                }
-                
-                if (!valid) errorstr += "<div class='alert alert-danger'><b>Request error</b> "+data_in+"</div>";
-            }
-        });
-        
+        // Apply delta adjustement to feed values
         if (feedlist[z].delta) {
             for (var i=1; i<feedlist[z].data.length; i++) {
                 if (feedlist[z].data[i][1]!=null && feedlist[z].data[i-1][1]!=null) {
@@ -620,12 +685,85 @@ function graph_reload()
             }
         }
     }
-    
-    if (errorstr!="") {
-        $("#error").html(errorstr).show();
-    } else {
-        $("#error").hide();
+    // call graph_draw() once feedlist is altered
+    graph_draw();
+}
+
+function group_legend_values(_flot, placeholder) {
+    var legend = document.getElementById('legend');
+    var current_legend = placeholder[0].nextSibling;
+    if (!current_legend) {
+        legend.innerHTML = '';
+        return;
     }
+    var current_legend_labels = current_legend.querySelector('table tbody');
+    var rows = Object.values(current_legend_labels.childNodes);
+    var left = [];
+    var right = [];
+    var output = "";
+
+    for (n in rows){
+        var row = rows[n];
+        var isRight = row.querySelector('.label-right');
+        if (isRight){
+            right.push(row);
+        } else {
+            left.push(row);
+        }
+    }
+
+    output += '<div class="grid-container">';
+    output += '    <div class="col left">';
+    output += '      <ul class="unstyled">';
+    output += build_rows(left);
+    output += '      </ul>';
+    output += '    </div>';
+    output += '    <div class="col right">';
+    output += '      <ul class="unstyled">';
+    output += build_rows(right);
+    output += '      </ul>';
+    output += '    </div>';
+    output += '</div>';
+    // populate new legend with html
+    legend.innerHTML = output;
+    // hide old legend
+    current_legend.style.display = 'none';
+    // add onclick events to links within legend
+    var items = legend.querySelectorAll('[data-legend-series]');
+    for(i = 0; i < items.length; i++) {
+        var item = items[i];
+        var link = item.querySelector('a');
+        // handle click of legend link
+        if (!link) continue;
+        link.addEventListener('click', onClickLegendLink)
+    }
+}
+function onClickLegendLink(event) {
+    event.preventDefault();
+    var link = event.target;
+    // toggle opacity of the link
+    link.classList.toggle('faded');
+    // re-draw the chart with the plot lines hidden/shown
+    var index = link.dataset.index;
+    var current_data = plot_statistics.getData()
+    current_data[index].lines.show = !current_data[index].lines.show;
+    plot_statistics.setData(current_data);
+    // re-draw
+    plot_statistics.draw();
+}
+function build_rows(rows) {
+    var output = "";
+    for (x in rows) {
+        var row = rows[x];
+        var label = row.querySelector('.legendLabel')
+        var span = label.querySelector('span');
+        var index = span.dataset.index;
+        var id = span.dataset.id;
+        var colour = '<div class="legendColorBox">' + row.querySelector('.legendColorBox').innerHTML + '</div>'
+        // add <li> to the html
+        output += '      <li data-legend-series><a href="' + path + 'graph/' + id + '" data-index="' + index + '" data-id="' + id + '">' + colour + label.innerText + '</a></li>';
+    }
+    return output;
 }
 
 function graph_draw()
@@ -633,20 +771,42 @@ function graph_draw()
     var options = {
         lines: { fill: false },
         xaxis: { 
-            mode: "time", timezone: "browser", 
-            min: view.start, max: view.end
+            mode: "time",
+            timezone: "browser", 
+            min: view.start,
+            max: view.end,
+            monthNames: moment ? moment.monthsShort() : null,
+            dayNames: moment ? moment.weekdaysMin() : null
         },
-	      yaxes: [ { }, {
-			      // align if we are to the right
-			      alignTicksWithAxis: 1,
-			      position: "right"
-			      //tickFormatter: euroFormatter
-		    } ],
+        yaxes: [ { }, {
+            // align if we are to the right
+            alignTicksWithAxis: 1,
+            position: "right"
+            //tickFormatter: euroFormatter
+        } ],
         grid: {hoverable: true, clickable: true},
         selection: { mode: "x" },
-        legend: { show: false, position: "nw", toggle: true },
+        legend: { 
+            show: false,
+            position: "nw",
+            toggle: true,
+            labelFormatter: function(label, item){
+                text = label;
+                cssClass = 'label-left';
+                title = 'Left Axis';
+                if (item.isRight) {
+                    cssClass = 'label-right';
+                    title = 'Right Axis';
+                }
+                data_attr = ' data-id="' + item.id + '" data-index="' + item.index + '"';
+                return '<span' + data_attr + ' class="' + cssClass + '" title="'+title+'">' + text +'</span>'
+            },
+        },
         toggle: { scale: "visible" },
-        touch: { pan: "x", scale: "x" }
+        touch: { pan: "x", scale: "x" },
+        hooks: {
+            bindEvents: [group_legend_values]
+        }
     }
 
     if (showlegend) options.legend.show = true;
@@ -687,10 +847,12 @@ function graph_draw()
         
         if (feedlist[z].plottype=="lines") { plot.lines = { show: true, fill: (feedlist[z].fill ? (stacked ? 1.0 : 0.5) : 0.0), fill: feedlist[z].fill } };
         if (feedlist[z].plottype=="bars") { plot.bars = { align: "center", fill: (feedlist[z].fill ? (stacked ? 1.0 : 0.5) : 0.0), show: true, barWidth: view.interval * 1000 * 0.75 } };
-
+        plot.isRight = feedlist[z].yaxis === 2;
+        plot.id = feedlist[z].id;
+        plot.index = z;
         plotdata.push(plot);
     }
-    $.plot($('#placeholder'), plotdata, options);
+    plot_statistics = $.plot($('#placeholder'), plotdata, options);
 
     if (!embed) {
         
@@ -702,8 +864,6 @@ function graph_draw()
         var out = "";
         for (var z in feedlist) {
             var dp = feedlist[z].dp;
-        
-            var apiurl = path+"feed/data.json?id="+feedlist[z].id+"&start="+view.start+"&end="+view.end+"&interval="+view.interval+"&skipmissing="+skipmissing+"&limitinterval="+view.limitinterval;
 
             out += "<tr>";
             out += "<td>";
@@ -790,7 +950,7 @@ function getfeed(id)
 function getfeedpublic(feedid) {
     var f = {};
     $.ajax({                                      
-        url: path+"feed/aget.json?id="+feedid,
+        url: path+"feed/aget.json?id="+feedid+apikeystr,
         async: false,
         dataType: "json",
         success: function(result) {
@@ -1011,6 +1171,10 @@ function histogram(feedid,type,resolution)
 //----------------------------------------------------------------------------------------
 $("#graph-select").change(function() {
     var name = $(this).val();
+    load_saved_graph(name);
+});
+
+function load_saved_graph(name) {
     $("#graph-name").val(name);
     $("#graph-delete").show();
     var index = graph_index_from_name(name);
@@ -1065,7 +1229,7 @@ $("#graph-select").change(function() {
     $("#csvnullvalues").val(csvnullvalues);
     $("#csvheaders").val(csvheaders);
     csvShowHide(tmpCsv);
-});
+}
 
 $("#graph-name").keyup(function(){
     var name = $(this).val();
@@ -1150,21 +1314,22 @@ function graph_index_from_name(name) {
     return index;
 }
 
-function graph_load_savedgraphs()
+function graph_load_savedgraphs(fn=false)
 {
     $.ajax({                                      
-        url: path+"/graph/getall",
+        url: path+"/graph/getall"+apikeystr,
         async: true,
         dataType: "json",
         success: function(result) {
             savedgraphs = result.user;
             
-            var out = "<option>Select graph:</option>";
+            var out = "<option>" + _lang['Select graph'] + ":</option>";
             for (var z in savedgraphs) {
                var name = savedgraphs[z].name;
                out += "<option>"+name+"</option>";
             }
             $("#graph-select").html(out);
+            if (fn) fn();
         }
     });
 }

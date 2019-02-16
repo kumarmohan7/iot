@@ -30,29 +30,39 @@
     height:40px;
     background-color:#ccc;
     font-weight:bold;
-    cursor:pointer;
     color:#fff;
+    position: relative;
 }
-
-.feed-options-title {
-  float:left;
-  padding:10px;
+.feed-options-header .caret {
+    /* margin: 1.2em 0 0 .7em; */
+    margin: .5em .6em .5em .3em;
+    transition: transform 300ms ease-in-out;
+    transform: rotate(0deg);
 }
-
-.feed-options-show-options {
-	float:right;
-	padding:10px;
-	width:150px;
-	text-align:center;
-	border-left: 1px solid #eee;
+.feed-options-header .caret.open {
+    transform: rotate(-90deg);
 }
-
-.feed-options-show-stats {
-	float:right;
-	padding:10px;
-	width:150px;
-	text-align:center;
-	border-left: 1px solid #eee;
+.feed-options-title:link,
+.feed-options-title:focus {
+    padding:10px;
+    color: white;
+    display: block;
+    text-decoration: none;
+    outline: 0;
+}
+.feed-options-title:hover {
+    color: currentColor;
+    opacity: .8;
+}
+.feed-options-title:active{
+    opacity: 1!important;
+}
+.feed-options-show-options,
+.feed-options-show-stats{
+    margin: 5px;
+    position: absolute;
+    right: 0;
+    z-index: 2;
 }
 
 #vis-mode-toggle, #vis-mode-user, #vis-mode-groups{
@@ -118,4 +128,50 @@ input.feed-tag-checkbox{
 }
 input.feed-tag-checkbox-left, input.feed-tag-checkbox-right{
     margin:0 5px;
+}
+#tooltip {
+    z-index: 1001;
+}
+/* Multi Axes label colours */
+#legend [data-legend-series] a{color: inherit}
+
+#legend {
+    width: 100%;
+    float: right;
+    position: relative;
+    z-index: 2;
+    font-size: 13px;
+}
+#legend .grid-container {
+    margin: 1.3em 3em 0 3.2em;
+    position: relative;
+}
+#legend .col {
+    position: absolute;
+    top: 0
+}
+#legend .right{
+    right: 0;
+}
+#legend .left{
+    left: 0;
+}
+#legend .legendColorBox {
+    display: inline-block;
+    margin-right: .3em;
+}
+#legend .legendColorBox > div > div{
+    width: .3em!important;
+    border-width: .4em!important;
+}
+#legend .faded {
+    opacity: .4;
+}
+#legend [data-legend-series] a{
+    outline: none;
+}
+@media(max-width: 512px) {
+    #legend .col {
+        position: relative; left: 0;
+    }
 }

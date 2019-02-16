@@ -165,6 +165,25 @@ var feed = {
     }
     return processlist;
   },
+//------------------------------------------------------->SMK Add 13-Oct-17 
+  'ids':function(){
+    var result = {};
+    var apikeystr = ""; if (feed.apikey!="") apikeystr = "?apikey="+feed.apikey;
+      
+      $.ajax({ url: path+"feed/ids.json"+apikeystr, dataType: 'json', async: false, success: function(data) {result = data;} });
+    
+    return feeds;
+  },
+  
+  'tags':function(){
+    var result = {};
+    var apikeystr = ""; if (feed.apikey!="") apikeystr = "?apikey="+feed.apikey;
+      
+      $.ajax({ url: path+"feed/tags.json"+apikeystr, data: "tag="+tag, dataType: 'json', async: false, success: function(data) {result = data;} });
+    
+    return feeds;
+  },
+//------------------------------------------------------->SMK Add 13-Oct-17   
 
   'reset_processlist':function(feedid,processid){
     var result = {};
@@ -185,5 +204,6 @@ var feed = {
     });
     return result;
   }
+  
 }
 

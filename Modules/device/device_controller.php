@@ -41,9 +41,17 @@ function device_controller()
                 }
                 $route->format = "text";
             }
-            else if ($route->subaction=="check" && $session['write']) {
+            else if ($route->subaction=="check" && $session['read']) {
                 // 2. User checks for device waiting for authentication
                 $result = $device->get_auth_request();
+                
+                if (isset($enable_UDP_broadcast) && $enable_UDP_broadcast) {
+                    $port = 5005;
+                    $broadcast_string = "emonpi.local";
+                    $sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+                    socket_set_option($sock, SOL_SOCKET, SO_BROADCAST, 1);
+                    socket_sendto($sock, $broadcast_string, strlen($broadcast_string), 0, '255.255.255.255', $port);
+                }
             }
             else if ($route->subaction=="allow" && $session['write']) {
                 // 3. User allows device to receive authentication details
@@ -51,7 +59,7 @@ function device_controller()
             }
         }
         else if ($route->action == 'list') {
-            if ($session['userid']>0 && $session['write']) $result = $device->get_list($session['userid']);
+            if ($session['userid']>0 && $session['read']) $result = $device->get_list($session['userid']);
         }
         else if ($route->action == "create") {
             if ($session['userid']>0 && $session['write']) $result = $device->create($session['userid'],get("nodeid"),get("name"),get("description"),get("type"),get("options"));
@@ -62,16 +70,16 @@ function device_controller()
         }
         else if ($route->action == "template" && $route->subaction != "prepare" && $route->subaction != "init") {
             if ($route->subaction == "listshort") {
-                if ($session['userid']>0 && $session['write']) $result = $device->get_template_list_meta($session['userid']);
+                if ($session['userid']>0 && $session['read']) $result = $device->get_template_list_meta($session['userid']);
             }
             else if ($route->subaction == "list") {
-                if ($session['userid']>0 && $session['write']) $result = $device->get_template_list($session['userid']);
+                if ($session['userid']>0 && $session['read']) $result = $device->get_template_list($session['userid']);
             }
             else if ($route->subaction == "reload") {
                 if ($session['userid']>0 && $session['write']) $result = $device->reload_template_list($session['userid']);
             }
             else if ($route->subaction == "get") {
-                if ($session['userid']>0 && $session['write']) $result = $device->get_template($session['userid'], get('type'));
+                if ($session['userid']>0 && $session['read']) $result = $device->get_template($session['userid'], get('type'));
             }
         }
         else {
