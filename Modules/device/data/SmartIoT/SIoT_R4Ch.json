@@ -1,0 +1,131 @@
+{
+    "name": "SIoT-R4Ch",
+    "category": "Smart IoT",
+    "group": "Control",
+    "description": "Control SIoT-R4Ch device.",
+    "inputs": 
+    [
+        {
+            "name": "Chip_ID",
+            "description": " ",
+            "processList": []
+        },
+        {
+            "name": "Temperature",
+            "description": " ",
+            "processList": 
+            [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "Temperature" }
+                }
+            ]
+        },
+        {
+            "name": "Humidity",
+            "description": " ",
+            "processList": 
+            [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "Humidity" }
+                }
+            ]
+        },
+        {
+            "name": "Light",
+            "description": " ",
+            "processList": 
+            [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "Light" }
+                }
+            ]
+        },
+        {
+            "name": "period",
+            "description": "Control period",
+            "processList": []
+        },
+        {
+            "name": "end",
+            "description": "Control end",
+            "processList": []
+        },
+        {
+            "name": "interruptible",
+            "description": "Control interruptible",
+            "processList": []
+        },
+        {
+            "name": "status",
+            "description": "Control status",
+            "processList": []
+        }
+    ],
+
+    "feeds": 
+    [
+        {
+            "name": "Temperature",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "°C"
+        },
+        {
+            "name": "Humidity",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "%"
+        },
+        {
+            "name": "Light",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "%"
+        },
+        {
+            "name": "Switch_1",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "5",
+            "unit": ""
+        },
+        {
+            "name": "Switch_2",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "5",
+            "unit": "%"
+        },
+        {
+            "name": "Switch_3",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "5",
+            "unit": "%"
+        },
+        {
+            "name": "Switch_4",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "5",
+            "unit": "%"
+        }
+    ],
+    "control": 
+    {
+        "active": {"name":"Active","type":"checkbox","default":1},
+        "period": {"name":"Run period", "type":"time","default":0,"resolution":0.5},
+        "end": {"name":"Complete by", "type":"time","default":0,"resolution":0.5},
+        "repeat": {"type":"weekly-scheduler","default":[1,1,1,1,1,0,0]},
+        "interruptible": {"name":"Ok to interrupt schedule","type":"checkbox","default":0},
+        "runonce": {"type":"","default":true},
+        "basic": {"type":"","default":0},
+        "signal": {"name":"Signal","type":"select","default":"carbonintensity"}
+    }
+}
