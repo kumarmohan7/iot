@@ -56,24 +56,23 @@ function feed_controller()
                 else if (isset($_GET['userid']) && $_GET['userid'] != $session['userid']) return $feed->get_user_public_feeds(get('userid'));
             }
             else if (isset($_GET['userid'])) return $feed->get_user_public_feeds(get('userid'));
-
+        }
 //------------------------------------------------------->SMK Add 13-Oct-17      
         elseif ($route->action == "ids" && $session['read']) 
         {
-            $result = $feed->get_user_feed_ids($session['userid']);
-//            $result = $feed->get_user_feed_ids_tags($session['userid']); //TODO SMK Testing 13-Oct-17
+            return $feed->get_user_feed_ids($session['userid']);
+            //return $feed->get_user_feed_ids_tags($session['userid']); //TODO SMK Testing 13-Oct-17
         } 
         elseif ($route->action == "tags") 
         {
             $tag_name = get('tag');
-//            $result = $tag_name;
-            
-            $result = $feed->get_user_feed_ids_from_tag($session['userid'],$tag_name); //TODO SMK Testing 13-Oct-17
+            //return $tag_name;
+            return $feed->get_user_feed_ids_from_tag($session['userid'],$tag_name); //TODO SMK Testing 13-Oct-17
         } 
         elseif ($route->action == "info" && $session['read'])  
         {
             $tag_name = get('tag');
-            $result = $feed->GetUserFeedInfo($session['userid'],$tag_name);    //TODO SMK Testing 06-Dec-18
+            return $feed->GetUserFeedInfo($session['userid'],$tag_name);    //TODO SMK Testing 06-Dec-18
         } 
         
 //------------------------------------------------------->SMK Add 13-Oct-17     
