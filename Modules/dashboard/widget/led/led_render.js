@@ -127,7 +127,9 @@ function led_init()
 }
 
 function led_slowupdate() {
-  led_draw();
+//  led_draw();
 }
 
-function led_fastupdate() {}
+function led_fastupdate() {
+  led_draw();
+}
