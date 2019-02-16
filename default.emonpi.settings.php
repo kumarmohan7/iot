@@ -1,11 +1,12 @@
 <?php
 
 //1 #### Mysql database settings
-    $server   = "127.0.0.1";
-    $database = "emoncms";
-    $username = "emoncms";
-    $password = "emonpiemoncmsmysql2016";
+    $server   = "mysql.hostinger.in";
+    $database = "u885122168_test";
+    $username = "u885122168_test";
+    $password = "9952139741";
     $port     = "3306";
+
     // Skip database setup test - set to false once database has been setup.
     $dbtest = true;
 
@@ -56,21 +57,21 @@
         // Engines working folder. Default is /var/lib/phpfiwa,phpfina,phptimeseries
         // On windows or shared hosting you will likely need to specify a different data directory--
         // Make sure that emoncms has write permission's to the datadirectory folders
-        'phpfiwa'=>array(
-            'datadir' => '/home/pi/data/phpfiwa/'
+       'phpfiwa'=>array(
+            'datadir'=>'iot_data/phpfiwa/'
         ),
         'phpfina'=>array(
-            'datadir' => '/home/pi/data/phpfina/'
+            'datadir'=>'iot_data/phpfina/'
         ),
         'phptimeseries'=>array(
-            'datadir' => '/home/pi/data/phptimeseries/'
+            'datadir'=>'iot_data/phptimeseries/'
         ),
         'cassandra'=>array(
-            'keyspace' => 'emoncms'
+            'keyspace' => 'SmartIoT'
         )
     );
 
-    $homedir = "/home/pi";
+    //$homedir = "/home/pi";
 
     // Max number of allowed different inputs per user. For limiting garbage rf data
     $max_node_id_limit = 32;
@@ -86,7 +87,7 @@
     $themecolor = "blue";
 
     // Favicon filenme in Theme/$theme
-    $favicon = "favicon_emonpi.png";
+    $favicon = "favicon.png";
 
     // Use full screen width
     $fullwidth = true;
@@ -106,17 +107,17 @@
     $enable_password_reset = false;
 
     // Email address to email proccessed input values
-    $default_emailto = 'root@localhost';
-
+    $default_emailto = 'info@smartiot.co.in';
+    
     // (OPTIONAL) Email SMTP, used for password reset or other email functions
     $smtp_email_settings = array(
-      'host'=>"smtp.gmail.com",
-      'port'=>"465",  // 25, 465, 587
-      'from'=>array('noreply@emoncms.org' => 'EmonCMS'),
+      'host'=>"mx1.hostinger.in",
+      'port'=>"587",  // 25, 465, 587
+      'from'=>array('info@smartiot.co.in' => 'Smart-IoT'),
       // comment lines below that dont apply
       'encryption'=>"ssl", // ssl, tls
-      'username'=>"yourusername@gmail.com",
-      'password'=>"yourpassword"
+      'username'=>"info@smartiot.co.in",
+      'password'=>"9952139741"
     );
 
     // Default controller and action if none are specified and user is anonymous
@@ -142,7 +143,7 @@
 //6 #### Other settings
     // Log file configuration
     $log_enabled = true;
-    $log_filename = '/var/log/emoncms.log';
+    $log_filename = 'iot_data//emoncms.log';
     // Log Level: 1=INFO, 2=WARN, 3=ERROR
     $log_level = 2;
 
@@ -179,4 +180,4 @@
     $updatelogin = false;
 
     // Applicaton name
-    $appname = "emoncms";
+    $appname = "Smart IoT";
