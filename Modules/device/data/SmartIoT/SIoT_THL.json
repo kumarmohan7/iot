@@ -1,0 +1,67 @@
+{
+    "name": "SIoT-THL",
+    "category": "Smart IoT",
+    "group": "Monitoring Temp, Humi, Light",
+    "description": "Automatic inputs and feeds creation for SIoT-THL device.",
+    "inputs": [
+        {
+            "name": "Chip_ID",
+            "description": " ",
+            "processList": []
+        },
+        {
+            "name": "Temperature",
+            "description": " ",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "Temperature" }
+                }
+            ]
+        },
+        {
+            "name": "Humidity",
+            "description": " ",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "Humidity" }
+                }
+            ]
+        },
+        {
+            "name": "Light",
+            "description": " ",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "Light" }
+                }
+            ]
+        }
+    ],
+
+    "feeds": [
+        {
+            "name": "Temperature",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "°C"
+        },
+        {
+            "name": "Humidity",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "%"
+        },
+        {
+            "name": "Light",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "%"
+        }
+    ]
+}
