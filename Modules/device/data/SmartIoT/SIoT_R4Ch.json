@@ -100,21 +100,21 @@
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "5",
-            "unit": "%"
+            "unit": ""
         },
         {
             "name": "Switch_3",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "5",
-            "unit": "%"
+            "unit": ""
         },
         {
             "name": "Switch_4",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "5",
-            "unit": "%"
+            "unit": ""
         }
     ],
     "control": 
