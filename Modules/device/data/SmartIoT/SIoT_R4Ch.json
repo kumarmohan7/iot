@@ -13,35 +13,26 @@
         {
             "name": "Temperature",
             "description": " ",
-            "processList": 
-            [
-                {
-                    "process": "log_to_feed",
-                    "arguments": {"type": "ProcessArg::FEEDID", "value": "Temperature" }
-                }
-            ]
+            "processList": [{
+                "process": "log_to_feed",
+                "arguments": {"type": "ProcessArg::FEEDID", "value": "Temperature" }
+            }]
         },
         {
             "name": "Humidity",
             "description": " ",
-            "processList": 
-            [
-                {
-                    "process": "log_to_feed",
-                    "arguments": {"type": "ProcessArg::FEEDID", "value": "Humidity" }
-                }
-            ]
+            "processList": [{
+                "process": "log_to_feed",
+                "arguments": {"type": "ProcessArg::FEEDID", "value": "Humidity" }
+            }]
         },
         {
             "name": "Light",
             "description": " ",
-            "processList": 
-            [
-                {
-                    "process": "log_to_feed",
-                    "arguments": {"type": "ProcessArg::FEEDID", "value": "Light" }
-                }
-            ]
+            "processList": [{
+                "process": "log_to_feed",
+                "arguments": {"type": "ProcessArg::FEEDID", "value": "Light" }
+            }]
         },
         {
             "name": "period",
