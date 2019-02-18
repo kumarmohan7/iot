@@ -38,9 +38,18 @@ function button_events()
     if (invalue === 0) outval = 1;
     if (invalue === 1) outval = 0;
 
-    feed.set(feedid,{'time':parseInt((new Date()).getTime()/1000),'value':outval});
-    $(this).attr("value",outval);
+    //feed.set(feedid,{'time':parseInt((new Date()).getTime()/1000),'value':outval});
+    //$(this).attr("value",outval);
 
+    var jqxhr; //jQuery XMLHttpRequest
+
+    jqxhr = $.ajax({
+        	  type: "GET",
+        	  url: "http://test.smartiot.co.in/feed/update.json?id="+feedid+"&time=UNIXTIME&value="+outval,
+        	  timeout:1000
+        	});
+    console.log(jqxhr);
+    $(this).attr("value",outval);
     var id = "can-"+$(this).attr("id");
     draw_button(widgetcanvas[id], outval);
     associd[feedid]['value'] = outval;
@@ -67,11 +76,12 @@ function button_draw()
 
 function button_slowupdate()
 {
-  button_draw();
+  //button_draw();
 }
 
 function button_fastupdate()
 {
+  button_draw();
 }
 
 
