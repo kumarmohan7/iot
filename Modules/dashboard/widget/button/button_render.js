@@ -90,7 +90,7 @@ function button_draw()
 
 function button_slowupdate()
 {
-  button_draw();
+  //button_draw();
 }
 
 function button_fastupdate()
