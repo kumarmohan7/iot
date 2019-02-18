@@ -95,6 +95,7 @@ function button_slowupdate()
 
 function button_fastupdate()
 {
+  button_draw();
 }
 
 
