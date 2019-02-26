@@ -21,7 +21,7 @@ function button_widgetlist()
       "optionsname":[_Tr("Feed"),_Tr("Value")],
       "optionshint":[_Tr("Feed to set, control with caution, make sure device being controlled can operate safely in event of emoncms failure."),_Tr("Starting value")]
     }
-  }
+  };
 
   button_events();
 
@@ -30,6 +30,22 @@ function button_widgetlist()
 
 function button_events()
 {
+  // $('.button').on("click", function(event) {
+  //   var feedid = $(this).attr("feedid");
+  //   if (assocfeed[feedid]!==undefined) feedid = assocfeed[feedid]; // convert tag:name to feedid
+
+  //   var invalue = $(this).attr("value");
+  //   if (invalue === 0) outval = 1;
+  //   if (invalue === 1) outval = 0;
+
+  //   feed.set(feedid,{'time':parseInt((new Date()).getTime()/1000),'value':outval});
+  //   $(this).attr("value",outval);
+
+  //   var id = "can-"+$(this).attr("id");
+  //   draw_button(widgetcanvas[id], outval);
+  //   associd[feedid]['value'] = outval;
+  // });
+
   $('.button').on("click", function(event) {
     var feedid = $(this).attr("feedid");
     if (assocfeed[feedid]!=undefined) feedid = assocfeed[feedid]; // convert tag:name to feedid
@@ -37,23 +53,19 @@ function button_events()
     var invalue = $(this).attr("value");
     if (invalue == 0) outval = 1;
     if (invalue == 1) outval = 0;
-    
-    $.ajax({ 
-        url: path+"feed/insert.json", 
-        data: "id="+feedid+"&time="+parseInt((new Date()).getTime()/1000)+"&value="+outval, 
-        dataType: 'json', 
-        async: false, 
-        success: function(result){
-            if (result!=outval) {
-                alert(JSON.stringify(result));
-            }
-        }
-    });
-    
-    $(this).attr("value",outval);
 
+    var jqxhr; //jQuery XMLHttpRequest
+
+    jqxhr = $.ajax({
+        	  type: "GET",
+        	  url: "http://test.smartiot.co.in/feed/update.json?id="+feedid+"&time=UNIXTIME&value="+outval,
+        	  timeout:1000
+        	});
+    
+    console.log(jqxhr);
+    $(this).attr("value",outval);
     var id = "can-"+$(this).attr("id");
-    draw_button(widgetcanvas[id], outval);
+    draw_switch(widgetcanvas[id], outval);
     associd[feedid]['value'] = outval;
   });
 }
@@ -61,7 +73,6 @@ function button_events()
 function button_init()
 {
   setup_widget_canvas('button');
-  button_draw();
 }
 
 function button_draw()
@@ -69,9 +80,9 @@ function button_draw()
   $('.button').each(function(index)
   {
     var feedid = $(this).attr("feedid");
-    if (assocfeed[feedid]!=undefined) feedid = assocfeed[feedid]; // convert tag:name to feedid
+    if (assocfeed[feedid]!==undefined) feedid = assocfeed[feedid]; // convert tag:name to feedid
     if (associd[feedid] === undefined) { console.log("Review config for feed id of " + $(this).attr("class")); return; }
-    var val = associd[feedid]['value']*1;
+    var val = (associd[feedid]['value'])*1;
     var id = "can-"+$(this).attr("id");
     draw_button(widgetcanvas[id], val);
   });
@@ -79,12 +90,12 @@ function button_draw()
 
 function button_slowupdate()
 {
-  button_draw();
+  //button_draw();
 }
 
 function button_fastupdate()
 {
-  
+  button_draw();
 }
 
 
