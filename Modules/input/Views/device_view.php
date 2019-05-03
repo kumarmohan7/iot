@@ -109,7 +109,7 @@ input[type="checkbox"] { margin:0px; }
 <div>
     <div id="input-header">
         <span id="api-help" style="float:right"><a href="api"><?php echo _('Input API Help'); ?></a></span>
-        <h2><?php echo _('Inputs'); ?></h2>
+        <h3> <?php echo _('Inputs'); ?></h3>
     </div>
     
     <div id="feedlist-controls" class="controls" data-spy="affix" data-offset-top="100">
@@ -147,7 +147,6 @@ input[type="checkbox"] { margin:0px; }
 <script>
 
 var path = "<?php echo $path; ?>";
-
 var devices = {};
 var inputs = {};
 var nodes = {};
@@ -284,7 +283,7 @@ function draw_devices()
         for (var i in device.inputs) {
             var input = device.inputs[i];
             var selected = selected_inputs[input.id] ? 'checked': '';
-            var processlistHtml = processlist_ui ? processlist_ui.drawpreview(input.processList) : '';
+            var processlistHtml = processlist_ui ? processlist_ui.drawpreview(input.processList, input) : '';
             latest_update[node] = latest_update > input.time ? latest_update : input.time;
 
             out += "<div class='node-input " + nodeItemIntervalClass(input) + "' id="+input.id+">";

@@ -34,6 +34,7 @@ function user_controller()
         
         if ($route->action == 'logout' && $session['read']) {
             $user->logout(); 
+            call_hook('on_logout',[]);
             header('Location: '.$path);
         }
         
@@ -41,6 +42,12 @@ function user_controller()
             $verify = $user->verify_email($_GET['email'], $_GET['key']);
             $result = view("Modules/user/login_block.php", array('allowusersregister'=>$allowusersregister,'verify'=>$verify));
         }
+
+        if ($route->action == 'bookmarks' && $session['write']) {
+            $bookmarks = $user->getUserBookmarks($session['userid']);
+            $result = view("Modules/user/Views/bookmarks.php", array('path'=>$path, 'bookmarks'=>$bookmarks));
+        }
+
     }
 
     // JSON API
@@ -49,7 +56,7 @@ function user_controller()
         // Core session
         if ($route->action == 'login' && !$session['read']) $result = $user->login(post('username'),post('password'),post('rememberme'));
         if ($route->action == 'register' && $allowusersregister) $result = $user->register(post('username'),post('password'),post('email'));
-        if ($route->action == 'logout' && $session['read']) $user->logout();
+        if ($route->action == 'logout' && $session['read']) {$user->logout();call_hook('on_logout',[]);}
         
         if ($route->action == 'resend-verify' && $email_verification) {
             if (isset($_GET['username'])) $username = $_GET['username']; else $username = $session["username"];
@@ -98,6 +105,7 @@ function user_controller()
                             $result .= call_hook('on_delete_user',['userid'=>$userid,'mode'=>'permanentdelete']);
                             
                             $user->logout();
+                            call_hook('on_logout',[]);
                         } else {
                             $result = "invalid password";
                         }
@@ -121,7 +129,7 @@ function user_controller()
                 case 'POST':
                     if(!empty(post('preferences'))){
                         $preferences = post('preferences');
-                        if($user->set_preferences($userid, $preferences)) {
+                        if($resp = $user->set_preferences($userid, $preferences)) {
                             $result = array('success'=>true, 'message'=>_('Preference Saved'));
                         } else {
                             $result = array('success'=>false, 'message'=>_('Problem saving Preferences'));
@@ -137,17 +145,30 @@ function user_controller()
                     } else {
                         $preferences = $user->get_preferences($userid, $property);
                     }
-
                     if(!empty($preferences)){
                         if(isset($preferences['success']) && $preferences['success']===false){
                             $error_msg = !empty($preferences['message']) ? $preferences['message'] : _('Error getting data');
+                            // return message if get_preferences() returns error message
                             $result = array('success'=>false, 'message'=>$error_msg);
                         }else{
-                            $result = array('success'=>true, 'preferences'=>$preferences);
+                            if (!$property) {
+                                // return all the keys if none passed
+                                $result = array('success'=>true, 'preferences'=>$preferences);
+                            } else {
+                                // just return the value if preference key supplied
+                                $result = $preferences;
+                            }
                         }
                     } else {
-                        $result = array('success'=>true, 'message'=>_('Empty'));
+                        if (!$property) {
+                            // "none found" if get_preferences() returns empty result
+                            $result = array('success'=>true, 'message'=>_('Empty'));
+                        } else {
+                            // return null value if specific key 
+                            $result = null;
+                        }
                     }
+                    return $result;
             }
         }
     }
